@@ -22,7 +22,7 @@ Then you can `@load` the 2 scripts (passive-host-learning.zeek and hostname-enri
 
 ## Usage
 
-After a while and when the clients of the network will start to request ips (maybe will take a day if the have already taken their ips), you 
+After a while and when the clients of the network will start to request ips (maybe will take a day if they have already taken their ips), you 
 will see to the Zeek logs the hostname. Also if the client take another ip the Zeek script will go and update the Zeek table and the sqlite db.
 
 The deletion of the record will occur only if the hostname and the mac address match. I don't delete only based on hostname because maybe some clients have the same default hostname.
