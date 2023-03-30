@@ -22,7 +22,7 @@ This will create a table `hostnames` inside the `/var/db/passive_hosts.sqlite`.
 
 Then you can `@load` the 2 scripts (passive-host-learning.zeek and hostname-enrichemnt.zeek) on the `local.zeek` and you are done. 
 
-`Disclaimer`: I don't include all the log files to the `hostname-enrichment.zeek`, but to can see how i am doing it and extend it by yourself.
+`Disclaimer`: I don't include all the log files for enrichment to the `hostname-enrichment.zeek`, but you can see how i am doing it and extend it by yourself.
 
 ## Usage
 
