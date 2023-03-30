@@ -6,6 +6,10 @@ Detecting Hostnames and enrich Zeek logs based on DHCP protocol
 It sees the dhcp requests/replies and extracts the hostname,mac address and ip.
 Then it loads it to a Zeek table and also to a sqlite db for persistancy.
 
+## What will not do
+
+It will not find hostnames of the machines with static ips.
+
 ## Installation
 
 Firstly you have to create an sqlite database.
@@ -31,4 +35,5 @@ The deletion of the record will occur only if the hostname and the mac address m
 
 - Maybe i will add an expiration timer for the records.
 - Test it and find bugs that maybe i miss.
+- Add more enrich information based on DHCP Options (like Router,ntp server,dns servers) #if they have internal ips.
 - Write a better README.
