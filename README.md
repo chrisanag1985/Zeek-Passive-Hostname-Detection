@@ -6,6 +6,11 @@ Detecting Hostnames and enrich Zeek logs based on DHCP protocol
 It sees the dhcp requests/replies and extracts the hostname,mac address and ip.
 Then it loads it to a Zeek table and also to a sqlite db for persistancy.
 
+It adds in the connection id (conn$id) 2 new fields that contains the hostname of the `orig_h` and `resp_h`. It does not add the 
+hostname resolving only in the dhcp connections to avoid inserting false data.
+
+It also add it to `Files::Info` and `X509::Info`, so you can see the hostname field in all the logs of Zeek.
+
 ## What will not do
 
 It will not find hostnames of the machines with static ips.
@@ -13,16 +18,15 @@ It will not find hostnames of the machines with static ips.
 ## Installation
 
 Firstly you have to create an sqlite database.
-You can to that by running the script that is provided in this repository (You have to already install the `sqlite3 package`).
+You can do that by running the script that is provided in this repository (You have to install the `sqlite3 package`).
 
 ```
 sh sqlite_creator.sh
 ```
 This will create a table `hostnames` inside the `/var/db/passive_hosts.sqlite`.
 
-Then you can `@load` the 2 scripts (passive-host-learning.zeek and hostname-enrichemnt.zeek) on the `local.zeek` and you are done. 
+Then you can `@load` the 4 scripts  on the `local.zeek` and you are done. 
 
-`Disclaimer`: I don't include all the log files for enrichment to the `hostname-enrichment.zeek`, but you can see how i am doing it and extend it by yourself.
 
 ## Usage
 
@@ -34,6 +38,7 @@ The deletion of the record will occur only if the hostname and the mac address m
 ## TODO
 
 - Maybe i will add an expiration timer for the records.
-- Test it and find bugs that maybe i miss.
+- Add to read file with static ip assignments at `zeek_init()`.
 - Add more enrich information based on DHCP Options (like Router,ntp server,dns servers) #if they have internal ips.
+- Test it and find bugs that maybe i miss.
 - Write a better README.
