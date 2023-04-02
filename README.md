@@ -40,5 +40,6 @@ The deletion of the record will occur only if the hostname and the mac address m
 - Maybe i will add an expiration timer for the records.
 - Add to read file with static ip assignments at `zeek_init()`.
 - Add more enrich information based on DHCP Options (like Router,ntp server,dns servers) #if they have internal ips.
-- Test it and find bugs that maybe i miss.
+- Test it on cluster mode (not cluster-in-a-box).
+- Test it and find bugs that maybe i missed.
 - Write a better README.
