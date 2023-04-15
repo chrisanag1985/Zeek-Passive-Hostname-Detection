@@ -10,7 +10,7 @@ redef record conn_id += {
 
 function find_hostname(ip: addr): string{
 
-	return	Passive_Hostname_Detection::hostnames_monitor[ip]$hostname;
+	return	Passive_Entities::entity[ip]$hostname;
 }
 
 event new_connection(c: connection) &priority=4
@@ -19,12 +19,22 @@ event new_connection(c: connection) &priority=4
  	local orig_h = c$id$orig_h;
 	local resp_h = c$id$resp_h;
 	if ( !(c$id$orig_p == 68/udp && c$id$resp_p == 67/udp)){
-		if ( orig_h in Passive_Hostname_Detection::hostnames_monitor){
+		if ( orig_h in Passive_Entities::entity){
 			 	c$id$orig_hostname = find_hostname(orig_h);
 		}
-		if ( resp_h in Passive_Hostname_Detection::hostnames_monitor){
+		if ( resp_h in Passive_Entities::entity){
 			 	c$id$resp_hostname = find_hostname(resp_h);
 				}
 	}
+	 if (orig_h in Static_Hostnames::static_hostnames_table){
+
+                c$id$orig_hostname =  Static_Hostnames::static_hostnames_table[orig_h]$hostname;
+        }
+        if (resp_h in Static_Hostnames::static_hostnames_table){
+
+                c$id$resp_hostname =  Static_Hostnames::static_hostnames_table[resp_h]$hostname;
+        }
+
+
 
 }

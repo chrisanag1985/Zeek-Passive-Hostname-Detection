@@ -1,87 +1,125 @@
-module Passive_Hostname_Detection;
+@load base/frameworks/cluster
+@load base/protocols/dhcp
+@load base/utils/directions-and-hosts
 
-type Idx: record {
-
-        ip: addr;
-
-};
+module Passive_Entities;
 
 
-type Val: record {
+
+type EntityInfo: record {
 	mac: string;
         hostname: string;
+	domain: string &optional;
+	first_time_seen: time &optional;
 };
 
 
 export {
 
-	global hostnames_monitor: table[addr] of Val = table();
+
+	option host_tracking = LOCAL_HOSTS;
+	global entity: table[addr] of EntityInfo &broker_allow_complex_type  &backend=Broker::SQLITE;
 
 }
 
 
-function clear_hostnames_monitor(hostname_del: string,mac_del: string){
 
+
+function do_hygiene(ip_addr: addr,info: EntityInfo)
+{
 	local to_delete: addr;
 	local found: bool = F;
 
+	for ( value in Passive_Entities::entity)
+	{
+	
+	    if ( value != ip_addr){
 
-	for ( ip,value in hostnames_monitor){
-
-		if ( hostname_del in value$hostname && mac_del in value$mac){
-			to_delete = ip;
+		# Found Old Record
+		if ( Passive_Entities::entity[value]$mac == info$mac)
+		{
+			to_delete = value;
 			found = T;
 			break;
-			}
 		}
 
-	if(found){
- 		delete hostnames_monitor[to_delete];
+	    }
 	}
 
-}
-
-event zeek_init(){
-
-	Input::add_table([$source="/var/db/passive_hosts",
-		$name="hostnames",
-		$idx=Idx,
-		$val=Val,
-		$destination=hostnames_monitor,
-		$reader=Input::READER_SQLITE,
-		$config=table(["query"] = "select * from hostnames;")
-		]);
-
-	Input::remove("hostnames");
-
-
+	# Delete Old Record
+	if (found)
+		delete Passive_Entities::entity[to_delete];
 
 }
 
 
+
+event Passive_Entities::entity_found(ip_addr: addr, info: EntityInfo)
+   {
+
+	if ( ip_addr in Passive_Entities::entity)
+	{
+		if ( Passive_Entities::entity[ip_addr]$mac == info$mac )
+		{
+			# If changed hostname
+			if (Passive_Entities::entity[ip_addr]$hostname == info$hostname)
+				print "Exists...";
+				return;
+
+		    # Change Hostname
+			Passive_Entities::entity[ip_addr]$hostname = info$hostname;
+		}
+		else
+		{
+			# Replace Record
+			Passive_Entities::entity[ip_addr] = info;
+		}
+        }	
+	else 
+	{	
+		#Found New IP 
+		Passive_Entities::entity[ip_addr] = info;
+		do_hygiene(ip_addr,info);
+
+   	}  
+	print Passive_Entities::entity;
+
+
+}
 
 
 hook DHCP::log_policy(rec: DHCP::Info,id: Log::ID, filter:Log::Filter){
-	local cmd: string;
+
+	local ip_addr: addr;
+	local e: EntityInfo;
+
+	if (!rec?$host_name)
+		return;
+
+	e$mac = rec$mac;
+	e$hostname = rec$host_name;
+
+	if ( rec?$domain )
+		e$domain = rec$domain;
+
 
         if(rec?$assigned_addr){
-        	cmd = fmt("sqlite3 /var/db/passive_hosts.sqlite \"delete from hostnames where hostname='%s' and mac='%s' ;replace into hostnames(mac,ip,hostname) values ('%s','%s','%s');\"",rec$host_name,rec$mac,rec$mac,rec$assigned_addr,rec$host_name);
-		clear_hostnames_monitor(rec$host_name,rec$mac);
-		hostnames_monitor[rec$assigned_addr] = [$mac=rec$mac,$hostname=rec$host_name];
+		ip_addr = rec$assigned_addr;
+		if ( addr_matches_host(ip_addr , host_tracking))
+			event Passive_Entities::entity_found(ip_addr,e);
+		
 	}
 	if ( rec?$requested_addr ){
-        	cmd = fmt("sqlite3 /var/db/passive_hosts.sqlite \"delete from hostnames where hostname='%s' and mac='%s' ;replace into hostnames(mac,ip,hostname) values ('%s','%s','%s');\"",rec$host_name,rec$mac,rec$mac,rec$requested_addr,rec$host_name);
-		clear_hostnames_monitor(rec$host_name,rec$mac);
-		hostnames_monitor[rec$requested_addr] = [$mac=rec$mac,$hostname=rec$host_name];
+		ip_addr = rec$requested_addr;
+		if ( addr_matches_host(ip_addr , host_tracking))
+			event Passive_Entities::entity_found(ip_addr,e);
 	}
 	if ( rec?$client_addr ){
-        	cmd = fmt("sqlite3 /var/db/passive_hosts.sqlite \"delete from hostnames where hostname='%s' and mac='%s' ;replace into hostnames(mac,ip,hostname) values ('%s','%s','%s');\"",rec$host_name,rec$mac,rec$mac,rec$client_addr,rec$host_name);
-		clear_hostnames_monitor(rec$host_name,rec$mac);
-		hostnames_monitor[rec$client_addr] = [$mac=rec$mac,$hostname=rec$host_name];
+		ip_addr = rec$client_addr;
+		if ( addr_matches_host(ip_addr , host_tracking))
+			event Passive_Entities::entity_found(ip_addr,e);
 	}
 
 
 
-	when [cmd]( local result = Exec::run([$cmd=cmd]))
-			{}
 }
