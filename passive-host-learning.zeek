@@ -82,7 +82,6 @@ event Passive_Entities::entity_found(ip_addr: addr, info: EntityInfo)
 		do_hygiene(ip_addr,info);
 
    	}  
-	print Passive_Entities::entity;
 
 
 }
