@@ -26,14 +26,6 @@ event new_connection(c: connection) &priority=4
 			 	c$id$resp_hostname = find_hostname(resp_h);
 				}
 	}
-	 if (orig_h in Static_Hostnames::static_hostnames_table){
-
-                c$id$orig_hostname =  Static_Hostnames::static_hostnames_table[orig_h]$hostname;
-        }
-        if (resp_h in Static_Hostnames::static_hostnames_table){
-
-                c$id$resp_hostname =  Static_Hostnames::static_hostnames_table[resp_h]$hostname;
-        }
 
 
 
