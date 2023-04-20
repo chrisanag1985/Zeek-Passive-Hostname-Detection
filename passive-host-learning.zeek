@@ -18,7 +18,13 @@ export {
 
 
 	option host_tracking = LOCAL_HOSTS;
-	global entity: table[addr] of EntityInfo &broker_allow_complex_type  &backend=Broker::SQLITE;
+	option entities_store_persistancy = F;
+
+	@if (Passive_Entities::entities_store_persistancy)
+		global entity: table[addr] of EntityInfo &broker_allow_complex_type  &backend=Broker::SQLITE;
+	@else
+		global entity: table[addr] of EntityInfo &broker_allow_complex_type  &backend=Broker::MEMORY;
+	@endif
 
 }
 
@@ -32,7 +38,7 @@ function do_hygiene(ip_addr: addr,info: EntityInfo)
 
 	for ( value in Passive_Entities::entity)
 	{
-	
+
 	    if ( value != ip_addr){
 
 		# Found Old Record
@@ -74,14 +80,14 @@ event Passive_Entities::entity_found(ip_addr: addr, info: EntityInfo)
 			# Replace Record
 			Passive_Entities::entity[ip_addr] = info;
 		}
-        }	
-	else 
-	{	
-		#Found New IP 
+        }
+	else
+	{
+		#Found New IP
 		Passive_Entities::entity[ip_addr] = info;
 		do_hygiene(ip_addr,info);
 
-   	}  
+   	}
 
 
 }
@@ -106,7 +112,7 @@ hook DHCP::log_policy(rec: DHCP::Info,id: Log::ID, filter:Log::Filter){
 		ip_addr = rec$assigned_addr;
 		if ( addr_matches_host(ip_addr , host_tracking))
 			event Passive_Entities::entity_found(ip_addr,e);
-		
+
 	}
 	if ( rec?$requested_addr ){
 		ip_addr = rec$requested_addr;
