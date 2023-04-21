@@ -18,9 +18,9 @@ export {
 
 
 	option host_tracking = LOCAL_HOSTS;
-	option entities_store_persistancy = F;
+	option entities_store_persistency = F;
 
-	@if (Passive_Entities::entities_store_persistancy)
+	@if (Passive_Entities::entities_store_persistency)
 		global entity: table[addr] of EntityInfo &broker_allow_complex_type  &backend=Broker::SQLITE;
 	@else
 		global entity: table[addr] of EntityInfo &broker_allow_complex_type  &backend=Broker::MEMORY;
