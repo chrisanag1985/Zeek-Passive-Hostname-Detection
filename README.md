@@ -18,7 +18,7 @@ It will not find hostnames of the machines with static ips.
 ## Installation
 
 
-Load  the 4 scripts  on the `local.zeek` and you are done.
+Load  the folder in your `local.zeek` and `zeekctl deploy`. 
 
 
 ## Usage
