@@ -18,7 +18,7 @@ It will not find hostnames of the machines with static ips.
 ## Installation
 
 
-Load  the folder in your `local.zeek` and `zeekctl deploy`. 
+Load  the folder in your `local.zeek` and `zeekctl deploy`.
 
 
 ## Usage
@@ -29,7 +29,7 @@ The deletion of the record will occur only if the hostname and the mac address m
 
 Options:
 
-You can change the boolean option `entities_store_persistency` (default = F) in you want to save the entities in an sqlite for persistency.
+You can change the option `entities_store_persistency` (default = Broker::MEMORY) in you want to save the entities in an sqlite for persistency. Legit values are `Broker::MEMORY` or `Broker::SQLITE`.
 
 
 ## TODO
