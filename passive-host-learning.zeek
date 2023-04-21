@@ -20,23 +20,17 @@ export {
 	option host_tracking = LOCAL_HOSTS;
 	option entities_store_persistency = F;
 
-
-}
-
-event zeek_init(){
-
-	if (Passive_Entities::entities_store_persistency){
+	@if (Passive_Entities::entities_store_persistancy){
 		global entity: table[addr] of EntityInfo &broker_allow_complex_type  &backend=Broker::SQLITE;
 		}
-	else
-	{
+	@else
+		{
 		global entity: table[addr] of EntityInfo &broker_allow_complex_type  &backend=Broker::MEMORY;
-	}
-
-
-
+		}
+	@endif
 
 }
+
 
 
 
