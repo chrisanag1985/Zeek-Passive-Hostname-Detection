@@ -25,7 +25,7 @@ Load  the folder in your `local.zeek` and `zeekctl deploy`.
 
 After a while and when the clients of the network will start to request ips (maybe will take a day if they have already taken their ips), you will see to the Zeek logs the hostname.
 
-The deletion of the record will occur only if the hostname and the mac address match. I don't delete only based on hostname because maybe some clients have the same default hostname.
+The deletion of the record will occur only if the mac address match. I don't delete only based on hostname because maybe some clients have the same default hostname.
 
 Options:
 
