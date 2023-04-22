@@ -19,6 +19,7 @@ export {
   const entities_store_persistency = Broker::MEMORY &redef;
 
   global entity: table[addr] of EntityInfo &broker_allow_complex_type  &backend=entities_store_persistency;
+	global entity_found: event(ip_addr: addr, info: EntityInfo);
 }
 
 function do_hygiene(ip_addr: addr,info: EntityInfo)
