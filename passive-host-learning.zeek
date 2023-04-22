@@ -54,7 +54,6 @@ event Passive_Entities::entity_found(ip_addr: addr, info: EntityInfo)
 		{
 			# If changed hostname
 			if (Passive_Entities::entity[ip_addr]$hostname == info$hostname)
-				print "Exists...";
 				return;
 
 		    # Change Hostname
