@@ -4,10 +4,10 @@ Detecting Hostnames and enrich Zeek logs based on DHCP protocol
 ## How it works.
 
 It sees the dhcp requests/replies and extracts the hostname,mac address and ip.
-Then it loads it to a Zeek table and use sqlite db for persistancy.
+Then it loads it to a Zeek table and use sqlite db for persistency.
 
 It adds in the connection id (conn$id) 2 new fields that contains the hostname of the `orig_h` and `resp_h`. It does not add the
-hostname resolving only in the dhcp connections to avoid inserting false data.
+resolved hostname at the dhcp connections to avoid inserting false data.
 
 It also add it to `Files::Info` and `X509::Info`, so you can see the hostname field in all the logs of Zeek.
 
@@ -29,7 +29,7 @@ The deletion of the record will occur only if the hostname and the mac address m
 
 Options:
 
-You can change the option `entities_store_persistency` (default = Broker::MEMORY) in you want to save the entities in an sqlite for persistency. Legit values are `Broker::MEMORY` or `Broker::SQLITE`.
+You can change the const `redef Passive_Entities::entities_store_persistency` (default = Broker::MEMORY) in you want to save the entities in an sqlite for persistency. Legit values are `Broker::MEMORY` or `Broker::SQLITE`.
 
 
 ## TODO

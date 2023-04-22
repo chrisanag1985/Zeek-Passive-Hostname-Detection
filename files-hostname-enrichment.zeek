@@ -1,10 +1,7 @@
 redef record Files::Info += {
-
           orig_hostname: set[string] &log &optional &default=string_set();
           resp_hostname: set[string] &log &optional &default=string_set();
-
 };
-
 
 event file_sniff(f: fa_file, meta: fa_metadata){
 
@@ -12,8 +9,6 @@ event file_sniff(f: fa_file, meta: fa_metadata){
          {
              for (cid,c in f$conns)
              {
-
-
                   if ( c$id?$orig_hostname){
 
                           add f$info$orig_hostname[c$id$orig_hostname];
@@ -23,8 +18,5 @@ event file_sniff(f: fa_file, meta: fa_metadata){
                           add f$info$resp_hostname[c$id$resp_hostname];
                   }
              }
-
-
          }
-
 }

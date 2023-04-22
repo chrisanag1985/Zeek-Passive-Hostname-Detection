@@ -4,8 +4,6 @@
 
 module Passive_Entities;
 
-
-
 type EntityInfo: record {
 	mac: string;
         hostname: string;
@@ -13,23 +11,15 @@ type EntityInfo: record {
 	first_time_seen: time &optional;
 };
 
-
 export {
 
-
-	option host_tracking = LOCAL_HOSTS;
+	const host_tracking = LOCAL_HOSTS &redef;
 
 	# Broker::SQLITE or Broker::MEMORY
-  option entities_store_persistency = Broker::MEMORY;
+  const entities_store_persistency = Broker::MEMORY &redef;
+
   global entity: table[addr] of EntityInfo &broker_allow_complex_type  &backend=entities_store_persistency;
-
-
-
-
 }
-
-
-
 
 function do_hygiene(ip_addr: addr,info: EntityInfo)
 {
@@ -38,27 +28,21 @@ function do_hygiene(ip_addr: addr,info: EntityInfo)
 
 	for ( value in Passive_Entities::entity)
 	{
-
 	    if ( value != ip_addr){
-
-		# Found Old Record
-		if ( Passive_Entities::entity[value]$mac == info$mac)
-		{
-			to_delete = value;
-			found = T;
-			break;
-		}
-
+				# Found Old Record
+				if ( Passive_Entities::entity[value]$mac == info$mac)
+				{
+					to_delete = value;
+					found = T;
+					break;
+				}
 	    }
 	}
 
-	# Delete Old Record
-	if (found)
-		delete Passive_Entities::entity[to_delete];
-
+			# Delete Old Record
+			if (found)
+				delete Passive_Entities::entity[to_delete];
 }
-
-
 
 event Passive_Entities::entity_found(ip_addr: addr, info: EntityInfo)
    {
@@ -88,8 +72,6 @@ event Passive_Entities::entity_found(ip_addr: addr, info: EntityInfo)
 		do_hygiene(ip_addr,info);
 
    	}
-
-
 }
 
 
@@ -107,24 +89,22 @@ hook DHCP::log_policy(rec: DHCP::Info,id: Log::ID, filter:Log::Filter){
 	if ( rec?$domain )
 		e$domain = rec$domain;
 
-
-        if(rec?$assigned_addr){
+  if(rec?$assigned_addr){
 		ip_addr = rec$assigned_addr;
 		if ( addr_matches_host(ip_addr , host_tracking))
 			event Passive_Entities::entity_found(ip_addr,e);
-
 	}
+
 	if ( rec?$requested_addr ){
 		ip_addr = rec$requested_addr;
 		if ( addr_matches_host(ip_addr , host_tracking))
 			event Passive_Entities::entity_found(ip_addr,e);
 	}
+
 	if ( rec?$client_addr ){
 		ip_addr = rec$client_addr;
 		if ( addr_matches_host(ip_addr , host_tracking))
 			event Passive_Entities::entity_found(ip_addr,e);
 	}
-
-
 
 }
