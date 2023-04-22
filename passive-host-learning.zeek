@@ -86,6 +86,7 @@ hook DHCP::log_policy(rec: DHCP::Info,id: Log::ID, filter:Log::Filter){
 
 	e$mac = rec$mac;
 	e$hostname = rec$host_name;
+	e$first_time_seen = rec$ts;
 
 	if ( rec?$domain )
 		e$domain = rec$domain;
