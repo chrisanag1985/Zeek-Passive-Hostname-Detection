@@ -13,9 +13,9 @@ type EntityInfo: record {
 
 export {
 
-	const host_tracking = LOCAL_HOSTS &redef;
+  const host_tracking = LOCAL_HOSTS &redef;
 
-	# Broker::SQLITE or Broker::MEMORY
+  # Broker::SQLITE or Broker::MEMORY
   const entities_store_persistency = Broker::MEMORY &redef;
 
   global entity: table[addr] of EntityInfo &broker_allow_complex_type  &backend=entities_store_persistency;

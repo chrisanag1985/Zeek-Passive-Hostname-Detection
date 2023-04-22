@@ -10,8 +10,13 @@ redef record conn_id += {
 
 function find_hostname(ip: addr): string{
 
-	return	Passive_Entities::entity[ip]$hostname;
-}
+			local hostname = Passive_Entities::entity[ip]$hostname;
+			if (Passive_Entities::entity[ip]?$domain)
+					hostname = cat(hostname,"[",Passive_Entities::entity[ip]$domain,"]");
+					
+			return  hostname;
+
+	}
 
 event new_connection(c: connection) &priority=4
 {
